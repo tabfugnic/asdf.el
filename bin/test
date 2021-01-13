@@ -1,0 +1,6 @@
+#!/usr/bin/env sh
+
+emacs -batch \
+      --load=ert \
+      --load=asdf-test.el \
+      --funcall ert-run-tests-batch-and-exit

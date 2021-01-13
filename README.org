@@ -1,0 +1,18 @@
+* asdf.el
+
+=asdf.el= is an Emacs interface for [[https://asdf-vm.com][asdf version manager]].
+
+It provides functions that plug into the cli through Emacs and adds
+the necessary environment setup so your software will run within
+Emacs.
+
+** Installation
+
+Add =asdf.el= to your load path and enable it.
+
+#+BEGIN_SRC emacs-lisp
+(add-to-list 'load-path "/path/to/asdf.el")
+(require 'asdf)
+
+(asdf-enable) ;; This ensures Emacs has the correct paths to asdf shims and bin
+#+END_SRC

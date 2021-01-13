@@ -1,0 +1,31 @@
+version: 2
+base_job: &base_job
+  working_directory: "~/asdf.el"
+  steps:
+    - checkout
+    - run:
+        name: Run ERT tests
+        command: ./bin/test
+jobs:
+  emacs27:
+    <<: *base_job
+    docker:
+      - image: silex/emacs:27-dev
+
+  emacs26:
+    <<: *base_job
+    docker:
+      - image: silex/emacs:26-dev
+
+  emacs25:
+    <<: *base_job
+    docker:
+      - image: silex/emacs:25-dev
+
+workflows:
+  version: 2
+  emacs-versions:
+    jobs:
+      - emacs27
+      - emacs26
+      - emacs25
