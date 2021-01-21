@@ -60,9 +60,9 @@ based on the .tools-version if available.  Optionally pass NAME
 to specify the tool being installed.  Optionally specify
 VERSION."
     (interactive
-       (let ((name (completing-read "Tool: " (cons "" (asdf--plugin-list-list)))))
-         (if name
-             (list name (completing-read "Version: " (cons "" (asdf--list-all-list name))))
+       (let ((name (completing-read "Tool: " (cons " " (asdf--plugin-list-list)))))
+         (if (not (string-blank-p name))
+             (list name (completing-read "Version: " (cons " " (asdf--list-all-list name))))
            (list name))))
     (compile
      (substitute-env-vars

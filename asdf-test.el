@@ -99,6 +99,32 @@
           "/bin/fake-asdf install tool-thing 10.0"
           (buffer-string)))))))
 
+(ert-deftest asdf-install-interactive-no-input()
+  (let ((asdf-binary "./bin/fake-asdf") (prompt-responses '("")))
+    (cl-letf
+        (((symbol-function 'completing-read)
+          (lambda(prompt collection) (pop prompt-responses))))
+      (call-interactively 'asdf-install)
+      (with-current-buffer "*asdf-compilation*"
+        (rename-buffer "*interactive no input")
+        (should
+         (string-match-p
+          "/bin/fake-asdf install"
+          (buffer-string)))))))
+
+(ert-deftest asdf-install-interactive-only-input-version()
+  (let ((asdf-binary "./bin/fake-asdf") (prompt-responses '("tool-thing" "")))
+    (cl-letf
+        (((symbol-function 'completing-read)
+          (lambda(prompt collection) (pop prompt-responses))))
+      (call-interactively 'asdf-install)
+      (with-current-buffer "*asdf-compilation*"
+        (rename-buffer "*interactive tool*")
+        (should
+         (string-match-p
+          "/bin/fake-asdf install tool-thing"
+          (buffer-string)))))))
+
 (ert-deftest asdf-plugin-list-test()
   (let ((asdf-binary "./bin/fake-asdf") )
     (asdf-plugin-list)
