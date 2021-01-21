@@ -59,7 +59,11 @@ Run this command with no arguments and it will install all tools
 based on the .tools-version if available.  Optionally pass NAME
 to specify the tool being installed.  Optionally specify
 VERSION."
-    (interactive)
+    (interactive
+       (let ((name (completing-read "Tool: " (cons "" (asdf--plugin-list-list)))))
+         (if name
+             (list name (completing-read "Version: " (cons "" (asdf--list-all-list name))))
+           (list name))))
     (compile
      (substitute-env-vars
       (string-join
@@ -69,7 +73,33 @@ VERSION."
 (defun asdf-current ()
   "Get current versions being used in path."
   (interactive)
-  (shell-command (concat asdf-binary " " "current")))
+  (shell-command (asdf--command "current")))
+
+(defun asdf-plugin-list()
+  "Get currently installed plugin list."
+  (interactive)
+  (shell-command (asdf--command "plugin" "list")))
+
+(defun asdf--plugin-list-list()
+  "Get currently installed plugin list as usable strings."
+  (split-string
+   (replace-regexp-in-string
+    (rx (* (any " \t\n")) eos)
+    ""
+    (shell-command-to-string (asdf--command "plugin" "list"))) "\n"))
+
+(defun asdf--list-all-list(tool)
+  "Get list all versions for specific TOOL."
+  (split-string
+   (replace-regexp-in-string
+    (rx (* (any " \t\n")) eos)
+    ""
+    (shell-command-to-string (asdf--command "list" "all" tool))) "\n"))
+
+(defun asdf--command(&rest args)
+  "Construct command using ARGS and binary for execution."
+  (substitute-env-vars
+   (string-join (cons asdf-binary args) " ")))
 
 (defun asdf-enable ()
   "Setup asdf for environment."
