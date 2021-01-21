@@ -3,4 +3,5 @@
 emacs -batch \
       --load=ert \
       --load=asdf-test.el \
+      --no-site-file \
       --funcall ert-run-tests-batch-and-exit
