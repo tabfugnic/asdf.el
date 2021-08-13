@@ -134,4 +134,13 @@
         "asdf plugin list"
         (buffer-string))))))
 
+(ert-deftest asdf-plugin-list-test()
+  (let ((asdf-binary "./bin/fake-asdf") )
+    (asdf-plugin-list)
+    (with-current-buffer "*Shell Command Output*"
+      (should
+       (string-match-p
+        "asdf plugin list"
+        (buffer-string))))))
+
 ;;; asdf-test.el ends here
