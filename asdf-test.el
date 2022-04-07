@@ -109,7 +109,7 @@
         (rename-buffer "*interactive no input")
         (should
          (string-match-p
-          "/bin/fake-asdf install"
+          "asdf install"
           (buffer-string)))))))
 
 (ert-deftest asdf-install-interactive-only-input-version()
@@ -122,7 +122,7 @@
         (rename-buffer "*interactive tool*")
         (should
          (string-match-p
-          "/bin/fake-asdf install tool-thing"
+          "asdf install tool-thing"
           (buffer-string)))))))
 
 (ert-deftest asdf-plugin-list-test()
@@ -132,6 +132,15 @@
       (should
        (string-match-p
         "asdf plugin list"
+        (buffer-string))))))
+
+(ert-deftest asdf-plugin-add-simple-test()
+  (let ((asdf-binary "./bin/fake-asdf") )
+    (asdf-plugin-add "foo")
+    (with-current-buffer "*asdf-compilation*"
+      (should
+       (string-match-p
+        "asdf plugin add foo"
         (buffer-string))))))
 
 ;;; asdf-test.el ends here

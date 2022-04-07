@@ -80,6 +80,13 @@ VERSION."
   (interactive)
   (shell-command (asdf--command "plugin" "list")))
 
+(defun asdf-plugin-add(&optional name)
+  "Add a new plugin by NAME."
+  (interactive)
+  (compile
+   (asdf--command "plugin" "add" name)
+   'asdf-compilation-mode))
+
 (defun asdf--plugin-list-list()
   "Get currently installed plugin list as usable strings."
   (split-string
