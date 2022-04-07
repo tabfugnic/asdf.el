@@ -138,9 +138,50 @@
   (let ((asdf-binary "./bin/fake-asdf") )
     (asdf-plugin-add "foo")
     (with-current-buffer "*asdf-compilation*"
+      (rename-buffer "*plugin add simple*")
       (should
        (string-match-p
         "asdf plugin add foo"
         (buffer-string))))))
+
+(ert-deftest asdf-plugin-add-git-url-test()
+  (let ((asdf-binary "./bin/fake-asdf") )
+    (asdf-plugin-add "foo" "git@path/to/repo.git")
+    (with-current-buffer "*asdf-compilation*"
+      (rename-buffer "*plugin add git-url*")
+      (should
+       (string-match-p
+        "asdf plugin add foo git@path/to/repo.git"
+        (buffer-string))))))
+
+(ert-deftest asdf-plugin-add-simple-interactive-test()
+  (let ((asdf-binary "./bin/fake-asdf") (prompt-responses '("plugin" "")))
+    (cl-letf
+        (((symbol-function 'completing-read)
+          (lambda (prompt collection) (pop prompt-responses)))
+         ((symbol-function 'read-string)
+          (lambda (prompt initial-value) (pop prompt-responses))))
+      (call-interactively 'asdf-plugin-add)
+      (with-current-buffer "*asdf-compilation*"
+        (rename-buffer "*interactive plugin add simple*")
+        (should
+         (string-match-p
+          "asdf plugin add plugin"
+          (buffer-string)))))))
+
+(ert-deftest asdf-plugin-add-git-interactive-test()
+  (let ((asdf-binary "./bin/fake-asdf") (prompt-responses '("plugin" "path/to/git.git")))
+    (cl-letf
+        (((symbol-function 'completing-read)
+          (lambda (prompt collection) (pop prompt-responses)))
+        ((symbol-function 'read-string)
+          (lambda (prompt initial-value) (pop prompt-responses))))
+      (call-interactively 'asdf-plugin-add)
+      (with-current-buffer "*asdf-compilation*"
+        (rename-buffer "*interactive plugin add with git*")
+        (should
+         (string-match-p
+          "asdf plugin add plugin path/to/git.git"
+          (buffer-string)))))))
 
 ;;; asdf-test.el ends here
