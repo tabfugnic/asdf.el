@@ -127,12 +127,10 @@ Optionally supply a GIT-URL for git repository to a plugin."
 (defun asdf-enable ()
   "Setup asdf for environment."
   (interactive)
-  (let ((path (substitute-env-vars (concat asdf-path "/shims:" asdf-path "/bin:$PATH"))))
-    (setenv "PATH" path)
-    (setq exec-path
-          (append
-           (split-string-and-unquote path ":")
-           exec-path))))
+  (let ((shims-path (substitute-env-vars (concat asdf-path "/shims")))
+        (bin-path (directory-file-name (file-name-directory (substitute-env-vars asdf-binary)))))
+    (setenv "PATH" (concat shims-path ":" bin-path ":" (getenv "PATH")))
+    (setq exec-path (nconc (list shims-path bin-path) exec-path))))
 
 (provide 'asdf)
 
