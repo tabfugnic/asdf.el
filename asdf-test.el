@@ -32,19 +32,20 @@
 (require 'ert)
 
 (ert-deftest asdf-enable-sets-environment-test()
-  (let ((asdf-path "/path-to-asdf"))
+  (let ((asdf-path "/path-to-asdf-data")
+        (asdf-binary "/path-to-asdf-bin/bin/asdf"))
     (asdf-enable)
     (should
-     (string-match-p
-      "\\/path-to-asdf\\/shims:\\/path-to-asdf\\/bin:"
+     (string-prefix-p
+      "/path-to-asdf-data/shims:/path-to-asdf-bin/bin:"
       (getenv "PATH")))
     (should
      (member
-      "/path-to-asdf/shims"
+      "/path-to-asdf-data/shims"
       exec-path))
     (should
      (member
-      "/path-to-asdf/bin"
+      "/path-to-asdf-bin/bin"
       exec-path))))
 
 (ert-deftest asdf-current-test()
