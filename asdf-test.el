@@ -185,4 +185,12 @@
           "asdf plugin add plugin path/to/git.git"
           (buffer-string)))))))
 
+(ert-deftest asdf-plugin-update-all-test()
+  (let ((asdf-binary "./bin/fake-asdf") )
+    (asdf-plugin-update-all)
+    (with-current-buffer "*Shell Command Output*"
+      (should
+       (string-match-p
+        "asdf plugin update --all"
+        (buffer-string))))))
 ;;; asdf-test.el ends here

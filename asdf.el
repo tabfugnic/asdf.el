@@ -96,6 +96,11 @@ Optionally supply a GIT-URL for git repository to a plugin."
      (cl-remove-if 'null `(,asdf-binary "plugin" ,"add" ,name ,git-url)) " "))
    'asdf-compilation-mode))
 
+(defun asdf-plugin-update-all()
+  "Update every plugin."
+  (interactive)
+  (shell-command (asdf--command "plugin update --all")))
+
 (defun asdf--plugin-list-list()
   "Get currently installed plugin list as usable strings."
   (asdf--format-output-to-list
