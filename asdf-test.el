@@ -1,3 +1,4 @@
+;;; -*- lexical-binding: t; -*-
 ;;; asdf-test.el --- Test suite for asdf
 
 ;; Author: Eric J. Collins <eric@tabfugni.cc>
@@ -31,7 +32,7 @@
 (require 'asdf)
 (require 'ert)
 
-(ert-deftest asdf-enable-sets-environment-test()
+(ert-deftest asdf-enable-sets-environment-test ()
   (let ((asdf-path "/path-to-asdf-data")
         (asdf-binary "/path-to-asdf-bin/bin/asdf"))
     (asdf-enable)
@@ -39,59 +40,46 @@
      (string-prefix-p
       "/path-to-asdf-data/shims:/path-to-asdf-bin/bin:"
       (getenv "PATH")))
-    (should
-     (member
-      "/path-to-asdf-data/shims"
-      exec-path))
-    (should
-     (member
-      "/path-to-asdf-bin/bin"
-      exec-path))))
+    (should (member "/path-to-asdf-data/shims" exec-path))
+    (should (member "/path-to-asdf-bin/bin" exec-path))))
 
-(ert-deftest asdf-current-test()
+(ert-deftest asdf-current-test ()
   (let ((asdf-binary "./bin/fake-asdf"))
     (asdf-current)
     (with-current-buffer "*Shell Command Output*"
-      (should
-       (equal
-        (buffer-string)
-        "asdf current")))))
+      (should (equal (buffer-string) "asdf current")))))
 
-(ert-deftest asdf-install-no-arguments-test()
+(ert-deftest asdf-install-no-arguments-test ()
   (let ((asdf-binary "./bin/fake-asdf"))
     (asdf-install)
     (with-current-buffer "*asdf-compilation*"
       (rename-buffer "*no args*")
       (should
-       (string-match-p
-        "/bin/fake-asdf install"
-        (buffer-string))))))
+       (string-match-p "/bin/fake-asdf install" (buffer-string))))))
 
-(ert-deftest asdf-install-with-tool-test()
+(ert-deftest asdf-install-with-tool-test ()
   (let ((asdf-binary "./bin/fake-asdf"))
     (asdf-install "tool")
     (with-current-buffer "*asdf-compilation*"
       (rename-buffer "*tool*")
       (should
        (string-match-p
-        "/bin/fake-asdf install tool"
-        (buffer-string))))))
+        "/bin/fake-asdf install tool" (buffer-string))))))
 
-(ert-deftest asdf-install-with-tool-and-version-test()
+(ert-deftest asdf-install-with-tool-and-version-test ()
   (let ((asdf-binary "./bin/fake-asdf"))
     (asdf-install "tool" "1.0.0")
     (with-current-buffer "*asdf-compilation*"
       (rename-buffer "*tool and version*")
       (should
        (string-match-p
-        "/bin/fake-asdf install tool 1.0.0"
-        (buffer-string))))))
+        "/bin/fake-asdf install tool 1.0.0" (buffer-string))))))
 
-(ert-deftest asdf-install-interactive-no-args()
-  (let ((asdf-binary "./bin/fake-asdf") (prompt-responses '("tool-thing" "10.0")))
-    (cl-letf
-        (((symbol-function 'completing-read)
-          (lambda(prompt collection) (pop prompt-responses))))
+(ert-deftest asdf-install-interactive-no-args ()
+  (let ((asdf-binary "./bin/fake-asdf")
+        (prompt-responses '("tool-thing" "10.0")))
+    (cl-letf (((symbol-function 'completing-read)
+               (lambda (prompt collection) (pop prompt-responses))))
       (call-interactively 'asdf-install)
       (with-current-buffer "*asdf-compilation*"
         (rename-buffer "*interactive tool and version*")
@@ -100,53 +88,44 @@
           "/bin/fake-asdf install tool-thing 10.0"
           (buffer-string)))))))
 
-(ert-deftest asdf-install-interactive-no-input()
-  (let ((asdf-binary "./bin/fake-asdf") (prompt-responses '("")))
-    (cl-letf
-        (((symbol-function 'completing-read)
-          (lambda(prompt collection) (pop prompt-responses))))
+(ert-deftest asdf-install-interactive-no-input ()
+  (let ((asdf-binary "./bin/fake-asdf")
+        (prompt-responses '("")))
+    (cl-letf (((symbol-function 'completing-read)
+               (lambda (prompt collection) (pop prompt-responses))))
       (call-interactively 'asdf-install)
       (with-current-buffer "*asdf-compilation*"
         (rename-buffer "*interactive no input")
-        (should
-         (string-match-p
-          "asdf install"
-          (buffer-string)))))))
+        (should (string-match-p "asdf install" (buffer-string)))))))
 
-(ert-deftest asdf-install-interactive-only-input-version()
-  (let ((asdf-binary "./bin/fake-asdf") (prompt-responses '("tool-thing" "")))
-    (cl-letf
-        (((symbol-function 'completing-read)
-          (lambda(prompt collection) (pop prompt-responses))))
+(ert-deftest asdf-install-interactive-only-input-version ()
+  (let ((asdf-binary "./bin/fake-asdf")
+        (prompt-responses '("tool-thing" "")))
+    (cl-letf (((symbol-function 'completing-read)
+               (lambda (prompt collection) (pop prompt-responses))))
       (call-interactively 'asdf-install)
       (with-current-buffer "*asdf-compilation*"
         (rename-buffer "*interactive tool*")
         (should
          (string-match-p
-          "asdf install tool-thing"
-          (buffer-string)))))))
+          "asdf install tool-thing" (buffer-string)))))))
 
-(ert-deftest asdf-plugin-list-test()
-  (let ((asdf-binary "./bin/fake-asdf") )
+(ert-deftest asdf-plugin-list-test ()
+  (let ((asdf-binary "./bin/fake-asdf"))
     (asdf-plugin-list)
     (with-current-buffer "*Shell Command Output*"
-      (should
-       (string-match-p
-        "asdf plugin list"
-        (buffer-string))))))
+      (should (string-match-p "asdf plugin list" (buffer-string))))))
 
-(ert-deftest asdf-plugin-add-simple-test()
-  (let ((asdf-binary "./bin/fake-asdf") )
+(ert-deftest asdf-plugin-add-simple-test ()
+  (let ((asdf-binary "./bin/fake-asdf"))
     (asdf-plugin-add "foo")
     (with-current-buffer "*asdf-compilation*"
       (rename-buffer "*plugin add simple*")
       (should
-       (string-match-p
-        "asdf plugin add foo"
-        (buffer-string))))))
+       (string-match-p "asdf plugin add foo" (buffer-string))))))
 
-(ert-deftest asdf-plugin-add-git-url-test()
-  (let ((asdf-binary "./bin/fake-asdf") )
+(ert-deftest asdf-plugin-add-git-url-test ()
+  (let ((asdf-binary "./bin/fake-asdf"))
     (asdf-plugin-add "foo" "git@path/to/repo.git")
     (with-current-buffer "*asdf-compilation*"
       (rename-buffer "*plugin add git-url*")
@@ -155,28 +134,29 @@
         "asdf plugin add foo git@path/to/repo.git"
         (buffer-string))))))
 
-(ert-deftest asdf-plugin-add-simple-interactive-test()
-  (let ((asdf-binary "./bin/fake-asdf") (prompt-responses '("plugin" "")))
-    (cl-letf
-        (((symbol-function 'completing-read)
-          (lambda (prompt collection) (pop prompt-responses)))
-         ((symbol-function 'read-string)
-          (lambda (prompt initial-value) (pop prompt-responses))))
+(ert-deftest asdf-plugin-add-simple-interactive-test ()
+  (let ((asdf-binary "./bin/fake-asdf")
+        (prompt-responses '("plugin" "")))
+    (cl-letf (((symbol-function 'completing-read)
+               (lambda (prompt collection) (pop prompt-responses)))
+              ((symbol-function 'read-string)
+               (lambda (prompt initial-value)
+                 (pop prompt-responses))))
       (call-interactively 'asdf-plugin-add)
       (with-current-buffer "*asdf-compilation*"
         (rename-buffer "*interactive plugin add simple*")
         (should
          (string-match-p
-          "asdf plugin add plugin"
-          (buffer-string)))))))
+          "asdf plugin add plugin" (buffer-string)))))))
 
-(ert-deftest asdf-plugin-add-git-interactive-test()
-  (let ((asdf-binary "./bin/fake-asdf") (prompt-responses '("plugin" "path/to/git.git")))
-    (cl-letf
-        (((symbol-function 'completing-read)
-          (lambda (prompt collection) (pop prompt-responses)))
-        ((symbol-function 'read-string)
-          (lambda (prompt initial-value) (pop prompt-responses))))
+(ert-deftest asdf-plugin-add-git-interactive-test ()
+  (let ((asdf-binary "./bin/fake-asdf")
+        (prompt-responses '("plugin" "path/to/git.git")))
+    (cl-letf (((symbol-function 'completing-read)
+               (lambda (prompt collection) (pop prompt-responses)))
+              ((symbol-function 'read-string)
+               (lambda (prompt initial-value)
+                 (pop prompt-responses))))
       (call-interactively 'asdf-plugin-add)
       (with-current-buffer "*asdf-compilation*"
         (rename-buffer "*interactive plugin add with git*")
@@ -185,21 +165,17 @@
           "asdf plugin add plugin path/to/git.git"
           (buffer-string)))))))
 
-(ert-deftest asdf-plugin-update-all-test()
-  (let ((asdf-binary "./bin/fake-asdf") )
+(ert-deftest asdf-plugin-update-all-test ()
+  (let ((asdf-binary "./bin/fake-asdf"))
     (asdf-plugin-update-all)
     (with-current-buffer "*Shell Command Output*"
       (should
-       (string-match-p
-        "asdf plugin update --all"
-        (buffer-string))))))
+       (string-match-p "asdf plugin update --all" (buffer-string))))))
 
-(ert-deftest asdf-plugin-remove-test()
-  (let ((asdf-binary "./bin/fake-asdf") )
+(ert-deftest asdf-plugin-remove-test ()
+  (let ((asdf-binary "./bin/fake-asdf"))
     (asdf-plugin-remove "foo")
     (with-current-buffer "*Shell Command Output*"
       (should
-       (string-match-p
-        "asdf plugin remove foo"
-        (buffer-string))))))
+       (string-match-p "asdf plugin remove foo" (buffer-string))))))
 ;;; asdf-test.el ends here

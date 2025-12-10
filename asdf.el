@@ -49,9 +49,9 @@
   :group 'asdf)
 
 (define-compilation-mode
-  asdf-compilation-mode
-  "asdf compilation"
-  "Compilation output for asdf.")
+ asdf-compilation-mode
+ "asdf compilation"
+ "Compilation output for asdf.")
 
 (defun asdf-install (&optional name version)
   "Install tools.
@@ -59,15 +59,22 @@ Run this command with no arguments and it will install all tools
 based on the .tools-version if available.  Optionally pass NAME
 to specify the tool being installed.  Optionally specify
 VERSION."
-  (interactive
-   (let ((name (completing-read "Tool: " (cons " " (asdf--plugin-list-list)))))
-     (if (not (string-blank-p name))
-         (list name (completing-read "Version: " (cons " " (asdf--list-all-list name))))
-       (list name))))
+  (interactive (let ((name
+                      (completing-read
+                       "Tool: " (cons " " (asdf--plugin-list-list)))))
+                 (if (not (string-blank-p name))
+                     (list
+                      name
+                      (completing-read
+                       "Version: "
+                       (cons " " (asdf--list-all-list name))))
+                   (list name))))
   (compile
    (substitute-env-vars
-    (string-join
-     (cl-remove-if 'null `(,asdf-binary "install" ,name ,version)) " "))
+    (string-join (cl-remove-if
+                  'null
+                  `(,asdf-binary "install" ,name ,version))
+                 " "))
    'asdf-compilation-mode))
 
 (defun asdf-current ()
@@ -75,81 +82,89 @@ VERSION."
   (interactive)
   (shell-command (asdf--command "current")))
 
-(defun asdf-plugin-list()
+(defun asdf-plugin-list ()
   "Get currently installed plugin list."
   (interactive)
   (shell-command (asdf--command "plugin" "list")))
 
-(defun asdf-plugin-add(name &optional git-url)
+(defun asdf-plugin-add (name &optional git-url)
   "Add a new plugin by NAME.
 Optionally supply a GIT-URL for git repository to a plugin."
-  (interactive
-   (let ((input (split-string
-           (completing-read "Plugin: " (cons " " (asdf--plugin-list-all-list)))
-          " " t " ")))
-     (if (not (string-blank-p (car input)))
-         (list (car input) (read-string "Git URL: " (cadr input)))
-       (list (car input)))))
+  (interactive (let ((input
+                      (split-string
+                       (completing-read
+                        "Plugin: "
+                        (cons " " (asdf--plugin-list-all-list)))
+                       " " t " ")))
+                 (if (not (string-blank-p (car input)))
+                     (list
+                      (car input)
+                      (read-string "Git URL: " (cadr input)))
+                   (list (car input)))))
   (compile
    (substitute-env-vars
-    (string-join
-     (cl-remove-if 'null `(,asdf-binary "plugin" ,"add" ,name ,git-url)) " "))
+    (string-join (cl-remove-if
+                  'null
+                  `(,asdf-binary "plugin" , "add" ,name ,git-url))
+                 " "))
    'asdf-compilation-mode))
 
-(defun asdf-plugin-update-all()
+(defun asdf-plugin-update-all ()
   "Update every plugin."
   (interactive)
   (shell-command (asdf--command "plugin update --all")))
 
-(defun asdf-plugin-remove(name)
+(defun asdf-plugin-remove (name)
   "Remove plugin by NAME."
-  (interactive
-   (let ((name (split-string
-           (completing-read "Plugin: "
-                            (cons " " (asdf--plugin-list-list)))
-           " " t " ")))
-     (if (not (string-blank-p (car name)))
-       name)))
+  (interactive (let ((name
+                      (split-string (completing-read
+                                     "Plugin: "
+                                     (cons
+                                      " " (asdf--plugin-list-list)))
+                                    " " t " ")))
+                 (if (not (string-blank-p (car name)))
+                     name)))
   (shell-command
    (substitute-env-vars
-    (string-join
-     (cl-remove-if 'null `(,asdf-binary "plugin" "remove" ,name)) " "))
-   ))
+    (string-join (cl-remove-if
+                  'null
+                  `(,asdf-binary "plugin" "remove" ,name))
+                 " "))))
 
-(defun asdf--plugin-list-list()
+(defun asdf--plugin-list-list ()
   "Get currently installed plugin list as usable strings."
   (asdf--format-output-to-list
-    (shell-command-to-string (asdf--command "plugin" "list"))))
+   (shell-command-to-string (asdf--command "plugin" "list"))))
 
-(defun asdf--plugin-list-all-list()
+(defun asdf--plugin-list-all-list ()
   "Get currently installed plugin list as usable strings."
   (asdf--format-output-to-list
-    (shell-command-to-string (asdf--command "plugin" "list" "all"))))
+   (shell-command-to-string (asdf--command "plugin" "list" "all"))))
 
-(defun asdf--list-all-list(tool)
+(defun asdf--list-all-list (tool)
   "Get list all versions for specific TOOL."
   (asdf--format-output-to-list
    (shell-command-to-string (asdf--command "list" "all" tool))))
 
 (defun asdf--format-output-to-list (shell-output)
   "Take SHELL-OUTPUT and format it into a usable list to select from."
-  (split-string
-   (replace-regexp-in-string
-    (rx (* (any " \t\n")) eos)
-    ""
-    shell-output) "\n"))
+  (split-string (replace-regexp-in-string
+                 (rx (* (any " \t\n")) eos) "" shell-output)
+                "\n"))
 
-(defun asdf--command(&rest args)
+(defun asdf--command (&rest args)
   "Construct command using ARGS and binary for execution."
-  (substitute-env-vars
-   (string-join (cons asdf-binary args) " ")))
+  (substitute-env-vars (string-join (cons asdf-binary args) " ")))
 
 (defun asdf-enable ()
   "Setup asdf for environment."
   (interactive)
   (let ((shims-path (substitute-env-vars (concat asdf-path "/shims")))
-        (bin-path (directory-file-name (file-name-directory (substitute-env-vars asdf-binary)))))
-    (setenv "PATH" (concat shims-path ":" bin-path ":" (getenv "PATH")))
+        (bin-path
+         (directory-file-name
+          (file-name-directory (substitute-env-vars asdf-binary)))))
+    (setenv "PATH"
+            (concat shims-path ":" bin-path ":" (getenv "PATH")))
     (setq exec-path (nconc (list shims-path bin-path) exec-path))))
 
 (provide 'asdf)
