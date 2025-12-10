@@ -101,6 +101,21 @@ Optionally supply a GIT-URL for git repository to a plugin."
   (interactive)
   (shell-command (asdf--command "plugin update --all")))
 
+(defun asdf-plugin-remove(name)
+  "Remove plugin by NAME."
+  (interactive
+   (let ((name (split-string
+           (completing-read "Plugin: "
+                            (cons " " (asdf--plugin-list-list)))
+           " " t " ")))
+     (if (not (string-blank-p (car name)))
+       name)))
+  (shell-command
+   (substitute-env-vars
+    (string-join
+     (cl-remove-if 'null `(,asdf-binary "plugin" "remove" ,name)) " "))
+   ))
+
 (defun asdf--plugin-list-list()
   "Get currently installed plugin list as usable strings."
   (asdf--format-output-to-list

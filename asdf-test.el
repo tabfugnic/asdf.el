@@ -193,4 +193,13 @@
        (string-match-p
         "asdf plugin update --all"
         (buffer-string))))))
+
+(ert-deftest asdf-plugin-remove-test()
+  (let ((asdf-binary "./bin/fake-asdf") )
+    (asdf-plugin-remove "foo")
+    (with-current-buffer "*Shell Command Output*"
+      (should
+       (string-match-p
+        "asdf plugin remove foo"
+        (buffer-string))))))
 ;;; asdf-test.el ends here
