@@ -174,8 +174,7 @@
        (string-match-p "asdf plugin update --all" (buffer-string))))))
 
 (ert-deftest asdf-plugin-update-test ()
-  (let ((asdf-binary "./bin/fake-asdf")
-        (prompt-responses '("plugin" "")))
+  (let ((asdf-binary "./bin/fake-asdf"))
     (asdf-plugin-update "elisp")
     (with-current-buffer "*asdf-compilation*"
       (rename-buffer "*asdf plugin update*")
