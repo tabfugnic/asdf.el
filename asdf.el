@@ -109,11 +109,6 @@ Optionally supply a GIT-URL for git repository to a plugin."
                  " "))
    'asdf-compilation-mode))
 
-(defun asdf-plugin-update-all ()
-  "Update every plugin."
-  (interactive)
-  (shell-command (asdf--command "plugin update --all")))
-
 (defun asdf-plugin-remove (name)
   "Remove plugin by NAME."
   (interactive (let ((name
@@ -130,6 +125,13 @@ Optionally supply a GIT-URL for git repository to a plugin."
                   'null
                   `(,asdf-binary "plugin" "remove" ,name))
                  " "))))
+
+(defun asdf-plugin-update-all ()
+  "Update every plugin."
+  (interactive)
+  (compile
+   (asdf--command "plugin update --all")
+   'asdf-compilation-mode))
 
 (defun asdf--plugin-list-list ()
   "Get currently installed plugin list as usable strings."

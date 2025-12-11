@@ -168,7 +168,8 @@
 (ert-deftest asdf-plugin-update-all-test ()
   (let ((asdf-binary "./bin/fake-asdf"))
     (asdf-plugin-update-all)
-    (with-current-buffer "*Shell Command Output*"
+    (with-current-buffer "*asdf-compilation*"
+      (rename-buffer "*interactive plugin update all*")
       (should
        (string-match-p "asdf plugin update --all" (buffer-string))))))
 
