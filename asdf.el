@@ -59,23 +59,19 @@ Run this command with no arguments and it will install all tools
 based on the .tools-version if available.  Optionally pass NAME
 to specify the tool being installed.  Optionally specify
 VERSION."
-  (interactive (let ((name
-                      (completing-read
-                       "Tool: " (cons " " (asdf--plugin-list-list)))))
-                 (if (not (string-blank-p name))
-                     (list
-                      name
-                      (completing-read
-                       "Version: "
-                       (cons " " (asdf--list-all-list name))))
-                   (list name))))
-  (compile
-   (substitute-env-vars
-    (string-join (cl-remove-if
-                  'null
-                  `(,asdf-binary "install" ,name ,version))
-                 " "))
-   'asdf-compilation-mode))
+  (interactive (let* ((name
+                       (car
+                        (string-split
+                         (asdf--ask-for-input-from-list
+                          "Tool" (asdf--plugin-list-all-list))
+                         " ")))
+                      (version
+                       (unless (string-blank-p name)
+                         (asdf--ask-for-input-from-list
+                          (format name "Version")
+                          (asdf--list-all-list name)))))
+                 (list name version)))
+  (asdf--compile-command "install" name version))
 
 (defun asdf-current ()
   "Get current versions being used in path."
@@ -90,113 +86,59 @@ VERSION."
 (defun asdf-plugin-add (name &optional git-url)
   "Add a new plugin by NAME.
 Optionally supply a GIT-URL for git repository to a plugin."
-  (interactive (let ((input
-                      (split-string
-                       (completing-read
-                        "Plugin: "
-                        (cons " " (asdf--plugin-list-all-list)))
-                       " " t " ")))
-                 (if (not (string-blank-p (car input)))
-                     (list
-                      (car input)
-                      (read-string "Git URL: " (cadr input)))
-                   (list (car input)))))
-  (compile
-   (substitute-env-vars
-    (string-join (cl-remove-if
-                  'null
-                  `(,asdf-binary "plugin" , "add" ,name ,git-url))
-                 " "))
-   'asdf-compilation-mode))
+  (interactive (let* ((input
+                       (split-string
+                        (asdf--ask-for-input-from-list
+                         "Plugin" (asdf--plugin-list-all-list))
+                        " "))
+                      (git-url
+                       (unless (string-blank-p (car input))
+                         (read-string "Git URL: " (cadr input)))))
+                 (list (car input) git-url)))
+  (asdf--compile-command "plugin" "add" name git-url))
 
 (defun asdf-plugin-remove (name)
   "Remove plugin by NAME."
   (interactive (let ((name
-                      (split-string (completing-read
-                                     "Plugin: "
-                                     (cons
-                                      " " (asdf--plugin-list-list)))
-                                    " " t " ")))
-                 (if (not (string-blank-p (car name)))
-                     name)))
-  (shell-command
-   (substitute-env-vars
-    (string-join (cl-remove-if
-                  'null
-                  `(,asdf-binary "plugin" "remove" ,name))
-                 " "))))
+                      (asdf--ask-for-input-from-list
+                       "Plugin" (asdf--plugin-list-list))))
+                 (list name)))
+  (shell-command (asdf--command "plugin" "remove" name)))
 
 (defun asdf-plugin-update-all ()
   "Update every plugin."
   (interactive)
-  (compile
-   (asdf--command "plugin update --all") 'asdf-compilation-mode))
+  (asdf--compile-command "plugin" "update" "--all"))
 
 (defun asdf-plugin-update (name)
   "Update every plugin by NAME."
   (interactive (let ((name
-                      (split-string (completing-read
-                                     "Plugin: "
-                                     (cons
-                                      " " (asdf--plugin-list-list)))
-                                    " " t " ")))
-                 (if (not (string-blank-p (car name)))
-                     name)))
-  (compile
-   (substitute-env-vars
-    (string-join (cl-remove-if
-                  'null
-                  `(,asdf-binary "plugin" "update" ,name))
-                 " "))
-   'asdf-compilation-mode))
+                      (asdf--ask-for-input-from-list
+                       "Plugin" (asdf--plugin-list-list))))
+                 (list name)))
+  (asdf--compile-command "plugin" "update" name))
 
 (defun asdf-latest (name)
   "Get latest version of a package by NAME."
   (interactive (let ((name
-                      (split-string (completing-read
-                                     "Package: "
-                                     (cons
-                                      " " (asdf--plugin-list-list)))
-                                    " " t " ")))
-                 (if (not (string-blank-p (car name)))
-                     name)))
-  (compile
-   (substitute-env-vars
-    (string-join (cl-remove-if
-                  'null
-                  `(,asdf-binary "latest" ,name))
-                 " "))
-   'asdf-compilation-mode))
+                      (asdf--ask-for-input-from-list
+                       "Package" (asdf--plugin-list-list))))
+                 (list name)))
+  (asdf--compile-command "latest" name))
 
 (defun asdf-latest-all ()
   "Get latest version of every package by installed plugin."
   (interactive)
-  (compile
-   (substitute-env-vars
-    (string-join (cl-remove-if
-                  'null
-                  `(,asdf-binary "latest" "--all"))
-                 " "))
-   'asdf-compilation-mode))
+  (asdf-latest "--all"))
 
 (defun asdf-where (name &optional version)
   "Display install path by NAME and optionally VERSION."
   (interactive (let ((name
-                      (split-string (completing-read
-                                     "Package: "
-                                     (cons
-                                      " " (asdf--plugin-list-list)))
-                                    " " t " ")))
-                 (if (not (string-blank-p (car name)))
-                     name)))
+                      (asdf--ask-for-input-from-list
+                       "Package" (asdf--plugin-list-list))))
+                 (list name)))
+  (asdf--compile-command "where" name))
 
-  (compile
-   (substitute-env-vars
-    (string-join (cl-remove-if
-                  'null
-                  `(,asdf-binary "where" ,name))
-                 " "))
-   'asdf-compilation-mode))
 (defun asdf--plugin-list-list ()
   "Get currently installed plugin list as usable strings."
   (asdf--format-output-to-list
@@ -218,9 +160,19 @@ Optionally supply a GIT-URL for git repository to a plugin."
                  (rx (* (any " \t\n")) eos) "" shell-output)
                 "\n"))
 
+(defun asdf--ask-for-input-from-list (prompt items)
+  "Define PROMPT and list of ITEMS to select from."
+  (completing-read (concat prompt ": ") (cons " " items)))
+
 (defun asdf--command (&rest args)
   "Construct command using ARGS and binary for execution."
-  (substitute-env-vars (string-join (cons asdf-binary args) " ")))
+  (substitute-env-vars
+   (string-join (cl-remove-if #'null (append `(,asdf-binary) args))
+                " ")))
+
+(defun asdf--compile-command (&rest args)
+  "Using ARGS compile the constructed command."
+  (compile (apply #'asdf--command args) 'asdf-compilation-mode))
 
 (defun asdf-enable ()
   "Setup asdf for environment."
