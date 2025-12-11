@@ -10,29 +10,19 @@ jobs:
   emacs30:
     <<: *base_job
     docker:
-      - image: silex/emacs:30
+      - image: silex/emacs:30-alpine-ci
   emacs29:
     <<: *base_job
     docker:
-      - image: silex/emacs:29
+      - image: silex/emacs:29-alpine-ci
   emacs28:
     <<: *base_job
     docker:
-      - image: silex/emacs:28
+      - image: silex/emacs:28-alpine-ci
   emacs27:
     <<: *base_job
     docker:
-      - image: silex/emacs:27
-
-  emacs26:
-    <<: *base_job
-    docker:
-      - image: silex/emacs:26
-
-  emacs25:
-    <<: *base_job
-    docker:
-      - image: silex/emacs:25
+      - image: silex/emacs:27-alpine-ci
 
 workflows:
   version: 2
@@ -42,5 +32,3 @@ workflows:
       - emacs29
       - emacs28
       - emacs27
-      - emacs26
-      - emacs25
