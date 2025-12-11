@@ -218,4 +218,12 @@
       (rename-buffer "*asdf latest all*")
       (should
        (string-match-p "asdf latest --all" (buffer-string))))))
+
+(ert-deftest asdf-where-test ()
+  (let ((asdf-binary "./bin/fake-asdf"))
+    (asdf-where "elisp")
+    (with-current-buffer "*asdf-compilation*"
+      (rename-buffer "*asdf where*")
+      (should
+       (string-match-p "asdf where elisp" (buffer-string))))))
 ;;; asdf-test.el ends here

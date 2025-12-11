@@ -178,6 +178,25 @@ Optionally supply a GIT-URL for git repository to a plugin."
                   `(,asdf-binary "latest" "--all"))
                  " "))
    'asdf-compilation-mode))
+
+(defun asdf-where (name &optional version)
+  "Display install path by NAME and optionally VERSION."
+  (interactive (let ((name
+                      (split-string (completing-read
+                                     "Package: "
+                                     (cons
+                                      " " (asdf--plugin-list-list)))
+                                    " " t " ")))
+                 (if (not (string-blank-p (car name)))
+                     name)))
+
+  (compile
+   (substitute-env-vars
+    (string-join (cl-remove-if
+                  'null
+                  `(,asdf-binary "where" ,name))
+                 " "))
+   'asdf-compilation-mode))
 (defun asdf--plugin-list-list ()
   "Get currently installed plugin list as usable strings."
   (asdf--format-output-to-list
