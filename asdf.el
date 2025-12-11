@@ -139,6 +139,11 @@ Optionally supply a GIT-URL for git repository to a plugin."
                  (list name)))
   (asdf--compile-command "where" name))
 
+(defun asdf-which (program)
+  "Run which on PROGRAMs installed by asdf."
+  (interactive (read-string "Which: "))
+  (shell-command (asdf--command "which" program)))
+
 (defun asdf--plugin-list-list ()
   "Get currently installed plugin list as usable strings."
   (asdf--format-output-to-list

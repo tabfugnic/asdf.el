@@ -208,22 +208,25 @@
     (asdf-latest "elisp")
     (with-current-buffer "*asdf-compilation*"
       (rename-buffer "*asdf latest*")
-      (should
-       (string-match-p "asdf latest elisp" (buffer-string))))))
+      (should (string-match-p "asdf latest elisp" (buffer-string))))))
 
 (ert-deftest asdf-latest-all-test ()
   (let ((asdf-binary "./bin/fake-asdf"))
     (asdf-latest-all)
     (with-current-buffer "*asdf-compilation*"
       (rename-buffer "*asdf latest all*")
-      (should
-       (string-match-p "asdf latest --all" (buffer-string))))))
+      (should (string-match-p "asdf latest --all" (buffer-string))))))
 
 (ert-deftest asdf-where-test ()
   (let ((asdf-binary "./bin/fake-asdf"))
     (asdf-where "elisp")
     (with-current-buffer "*asdf-compilation*"
       (rename-buffer "*asdf where*")
-      (should
-       (string-match-p "asdf where elisp" (buffer-string))))))
+      (should (string-match-p "asdf where elisp" (buffer-string))))))
+
+(ert-deftest asdf-which-test ()
+  (let ((asdf-binary "./bin/fake-asdf"))
+    (asdf-which "foo")
+    (with-current-buffer "*Shell Command Output*"
+      (should (string-match-p "asdf which foo" (buffer-string))))))
 ;;; asdf-test.el ends here
