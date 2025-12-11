@@ -87,7 +87,7 @@ VERSION."
   "Add a new plugin by NAME.
 Optionally supply a GIT-URL for git repository to a plugin."
   (interactive (let* ((input
-                       (split-string
+                       (string-split
                         (asdf--ask-for-input-from-list
                          "Plugin" (asdf--plugin-list-all-list))
                         " "))
@@ -161,7 +161,7 @@ Optionally supply a GIT-URL for git repository to a plugin."
 
 (defun asdf--format-output-to-list (shell-output)
   "Take SHELL-OUTPUT and format it into a usable list to select from."
-  (split-string (replace-regexp-in-string
+  (string-split (replace-regexp-in-string
                  (rx (* (any " \t\n")) eos) "" shell-output)
                 "\n"))
 
