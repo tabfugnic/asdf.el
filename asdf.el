@@ -150,6 +150,34 @@ Optionally supply a GIT-URL for git repository to a plugin."
                  " "))
    'asdf-compilation-mode))
 
+(defun asdf-latest (name)
+  "Get latest version of a package by NAME."
+  (interactive (let ((name
+                      (split-string (completing-read
+                                     "Package: "
+                                     (cons
+                                      " " (asdf--plugin-list-list)))
+                                    " " t " ")))
+                 (if (not (string-blank-p (car name)))
+                     name)))
+  (compile
+   (substitute-env-vars
+    (string-join (cl-remove-if
+                  'null
+                  `(,asdf-binary "latest" ,name))
+                 " "))
+   'asdf-compilation-mode))
+
+(defun asdf-latest-all ()
+  "Get latest version of every package by installed plugin."
+  (interactive)
+  (compile
+   (substitute-env-vars
+    (string-join (cl-remove-if
+                  'null
+                  `(,asdf-binary "latest" "--all"))
+                 " "))
+   'asdf-compilation-mode))
 (defun asdf--plugin-list-list ()
   "Get currently installed plugin list as usable strings."
   (asdf--format-output-to-list

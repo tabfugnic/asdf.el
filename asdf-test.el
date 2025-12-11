@@ -202,4 +202,20 @@
     (with-current-buffer "*Shell Command Output*"
       (should
        (string-match-p "asdf plugin remove foo" (buffer-string))))))
+
+(ert-deftest asdf-latest-test ()
+  (let ((asdf-binary "./bin/fake-asdf"))
+    (asdf-latest "elisp")
+    (with-current-buffer "*asdf-compilation*"
+      (rename-buffer "*asdf latest*")
+      (should
+       (string-match-p "asdf latest elisp" (buffer-string))))))
+
+(ert-deftest asdf-latest-all-test ()
+  (let ((asdf-binary "./bin/fake-asdf"))
+    (asdf-latest-all)
+    (with-current-buffer "*asdf-compilation*"
+      (rename-buffer "*asdf latest all*")
+      (should
+       (string-match-p "asdf latest --all" (buffer-string))))))
 ;;; asdf-test.el ends here
