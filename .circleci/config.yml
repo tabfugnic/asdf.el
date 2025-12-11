@@ -7,25 +7,40 @@ base_job: &base_job
         name: Run ERT tests
         command: ./bin/test
 jobs:
+  emacs30:
+    <<: *base_job
+    docker:
+      - image: silex/emacs:30
+  emacs29:
+    <<: *base_job
+    docker:
+      - image: silex/emacs:29
+  emacs28:
+    <<: *base_job
+    docker:
+      - image: silex/emacs:28
   emacs27:
     <<: *base_job
     docker:
-      - image: silex/emacs:27-dev
+      - image: silex/emacs:27
 
   emacs26:
     <<: *base_job
     docker:
-      - image: silex/emacs:26-dev
+      - image: silex/emacs:26
 
   emacs25:
     <<: *base_job
     docker:
-      - image: silex/emacs:25-dev
+      - image: silex/emacs:25
 
 workflows:
   version: 2
   emacs-versions:
     jobs:
+      - emacs30
+      - emacs29
+      - emacs28
       - emacs27
       - emacs26
       - emacs25
