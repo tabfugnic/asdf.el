@@ -130,7 +130,24 @@ Optionally supply a GIT-URL for git repository to a plugin."
   "Update every plugin."
   (interactive)
   (compile
-   (asdf--command "plugin update --all")
+   (asdf--command "plugin update --all") 'asdf-compilation-mode))
+
+(defun asdf-plugin-update (name)
+  "Update every plugin by NAME."
+  (interactive (let ((name
+                      (split-string (completing-read
+                                     "Plugin: "
+                                     (cons
+                                      " " (asdf--plugin-list-list)))
+                                    " " t " ")))
+                 (if (not (string-blank-p (car name)))
+                     name)))
+  (compile
+   (substitute-env-vars
+    (string-join (cl-remove-if
+                  'null
+                  `(,asdf-binary "plugin" "update" ,name))
+                 " "))
    'asdf-compilation-mode))
 
 (defun asdf--plugin-list-list ()

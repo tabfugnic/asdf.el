@@ -173,6 +173,30 @@
       (should
        (string-match-p "asdf plugin update --all" (buffer-string))))))
 
+(ert-deftest asdf-plugin-update-test ()
+  (let ((asdf-binary "./bin/fake-asdf")
+        (prompt-responses '("plugin" "")))
+    (asdf-plugin-update "elisp")
+    (with-current-buffer "*asdf-compilation*"
+      (rename-buffer "*asdf plugin update*")
+      (should
+       (string-match-p "asdf plugin update elisp" (buffer-string))))))
+
+(ert-deftest asdf-plugin-update-interactive-test ()
+  (let ((asdf-binary "./bin/fake-asdf")
+        (prompt-responses '("elisp" "")))
+    (cl-letf (((symbol-function 'completing-read)
+               (lambda (prompt collection) (pop prompt-responses)))
+              ((symbol-function 'read-string)
+               (lambda (prompt initial-value)
+                 (pop prompt-responses))))
+      (call-interactively 'asdf-plugin-update)
+      (with-current-buffer "*asdf-compilation*"
+        (rename-buffer "*interactive plugin update*")
+        (should
+         (string-match-p
+          "asdf plugin update elisp" (buffer-string)))))))
+
 (ert-deftest asdf-plugin-remove-test ()
   (let ((asdf-binary "./bin/fake-asdf"))
     (asdf-plugin-remove "foo")
