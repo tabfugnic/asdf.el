@@ -179,6 +179,7 @@ Optionally supply a GIT-URL for git repository to a plugin."
   "Using ARGS compile the constructed command."
   (compile (apply #'asdf--command args) 'asdf-compilation-mode))
 
+;;;###autoload
 (defun asdf-enable ()
   "Setup asdf for environment."
   (interactive)
